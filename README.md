@@ -1,4 +1,4 @@
-# Sistema Comercial para o Mercado da Economia
+# Sistema de Gestão Empresarial para o Mercado da Economia
 Desenvolvi este sistema abrangente como parte do projeto acadêmico para a disciplina de Atividade de Extensão I, do Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas, no Instituto Federal de Santa Catarina (IFSC) - Campus Canoinhas/SC. O software, criado utilizando C# .NET Windows Forms no Visual Studio 2022, é uma solução dedicada ao mercado da economia.
 
 Este sistema oferece funcionalidades cruciais para a gestão eficaz de negócios, incluindo:
