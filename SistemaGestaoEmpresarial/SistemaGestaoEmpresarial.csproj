@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2DA8B2C0-B9AD-48A7-B55A-D2103DA646DE}</ProjectGuid>
+    <ProjectGuid>{EFC8F89A-05B3-40AF-965F-CF66AC5BE5F7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SistemaComercial</RootNamespace>
-    <AssemblyName>SistemaComercial</AssemblyName>
+    <RootNamespace>SistemaGestaoEmpresarial</RootNamespace>
+    <AssemblyName>SistemaGestaoEmpresarial</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

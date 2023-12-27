@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SistemaComercial.Properties
+namespace SistemaGestaoEmpresarial.Properties
 {
 
 
