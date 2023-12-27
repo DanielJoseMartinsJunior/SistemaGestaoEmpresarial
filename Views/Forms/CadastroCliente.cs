@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SistemaGestaoEmpresarial
+namespace SistemaGestaoEmpresarial.Views.Forms
 {
-    public partial class TelaInicial : Form
+    public partial class CadastroCliente : Form
     {
-        public TelaInicial()
+        public CadastroCliente()
         {
             InitializeComponent();
         }
