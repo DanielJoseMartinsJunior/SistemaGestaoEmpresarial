@@ -1,14 +1,16 @@
 -- CRIAÇÃO DO BANCO DE DADOS:
-CREATE DATABASE bd_sistema_gestao_empresarial;
+CREATE DATABASE IF NOT EXISTS bd_sistema_gestao_empresarial;
 
 -- SELECIONANDO O BANCO DE DADOS:
 USE bd_sistema_gestao_empresarial;
 
 -- CRIAÇÃO DAS TABELAS:
-CREATE TABLE enderecos (
+
+-- Armazena informações sobre endereços de clientes, fornecedores.
+CREATE TABLE IF NOT EXISTS enderecos (
     id_enderecos INT AUTO_INCREMENT PRIMARY KEY,
     logradouro VARCHAR(255) NOT NULL,
-    numero INT NOT NULL,
+    numero VARCHAR(6) NOT NULL,
     complemento VARCHAR(255),
     bairro VARCHAR(100) NOT NULL,
     cidade VARCHAR(100) NOT NULL,
@@ -16,145 +18,159 @@ CREATE TABLE enderecos (
     cep VARCHAR(8) NOT NULL
 );
 
-CREATE TABLE contatos (
+-- Armazena informações de contato de clientes, fornecedores.
+CREATE TABLE IF NOT EXISTS contatos (
     id_contatos INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(100) NOT NULL UNIQUE,
     telefone_01 VARCHAR(11) NOT NULL,
     telefone_02 VARCHAR(11)
 );
 
-CREATE TABLE clientes (
+-- Armazena os status de pagamento de contas a pagar e a receber.
+CREATE TABLE IF NOT EXISTS status_pagamento (
+    id_status_pagamento INT AUTO_INCREMENT PRIMARY KEY,
+    descricao ENUM('Pendente', 'Pago', 'Atrasado') NOT NULL
+);
+
+-- Armazena informações sobre clientes, como nome, CPF, endereço e contatos.
+CREATE TABLE IF NOT EXISTS clientes (
     id_clientes INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(11) UNIQUE,
     id_enderecos INT NOT NULL,
     id_contatos INT NOT NULL,
-    data_atualizacao DATETIME NOT NULL,
-    FOREIGN KEY (id_enderecos) REFERENCES enderecos(id_enderecos),
-    FOREIGN KEY (id_contatos) REFERENCES contatos(id_contatos)
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_enderecos) REFERENCES enderecos(id_enderecos) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_contatos) REFERENCES contatos(id_contatos) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE fornecedores (
+-- Armazena informações sobre fornecedores, como nome, CNPJ, endereço e contatos.
+CREATE TABLE IF NOT EXISTS fornecedores (
     id_fornecedores INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cnpj VARCHAR(14) UNIQUE,
     id_enderecos INT NOT NULL,
     id_contatos INT NOT NULL,
-    data_atualizacao DATETIME NOT NULL,
-    FOREIGN KEY (id_enderecos) REFERENCES enderecos(id_enderecos),
-    FOREIGN KEY (id_contatos) REFERENCES contatos(id_contatos)
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_enderecos) REFERENCES enderecos(id_enderecos) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_contatos) REFERENCES contatos(id_contatos) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE produtos (
+-- Armazena informações sobre produtos, como código de barras, descrição, categoria, preço de custo e preço de venda.
+CREATE TABLE IF NOT EXISTS produtos (
     id_produtos INT AUTO_INCREMENT PRIMARY KEY,
     codigo_de_barras BIGINT NOT NULL UNIQUE,
     descricao VARCHAR(100) NOT NULL,
     categoria VARCHAR(100) NOT NULL,
     preco_de_custo DECIMAL(8, 2) NOT NULL,
     preco_de_venda DECIMAL(8, 2) NOT NULL,
-    data_atualizacao DATETIME NOT NULL
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE estoque (
+-- Armazena a quantidade de produtos em estoque.
+CREATE TABLE IF NOT EXISTS estoque (
     id_produto INT,
     quantidade INT NOT NULL,
     estoque_minimo INT,
     estoque_maximo INT,
     PRIMARY KEY (id_produto),
-    FOREIGN KEY (id_produto) REFERENCES produtos(id_produtos)
+    FOREIGN KEY (id_produto) REFERENCES produtos(id_produtos) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE compras (
+-- Armazena informações sobre compras, como data, subtotal e data de atualização.
+CREATE TABLE IF NOT EXISTS compras (
     id_compras INT AUTO_INCREMENT PRIMARY KEY,
-    data_compra DATETIME NOT NULL,
-    subtotal DECIMAL(8,2),
-    data_atualizacao DATETIME NOT NULL
+    data_compra TIMESTAMP NOT NULL,
+    subtotal DECIMAL(8, 2),
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE vendas (
+-- Armazena informações sobre vendas, como data, subtotal, total recebido e troco.
+CREATE TABLE IF NOT EXISTS vendas (
     id_vendas INT AUTO_INCREMENT PRIMARY KEY,
-    data_venda DATETIME NOT NULL,
-    subtotal DECIMAL(8,2),
-    total_recebido DECIMAL(8,2),
-    troco DECIMAL(8,2),
-    data_atualizacao DATETIME NOT NULL
+    data_venda TIMESTAMP NOT NULL,
+    subtotal DECIMAL(8, 2),
+    total_recebido DECIMAL(8, 2),
+    troco DECIMAL(8, 2),
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE itens_compra (
+-- Armazena a relação entre uma compra e os produtos comprados.
+CREATE TABLE IF NOT EXISTS itens_compra (
     id_compras INT,
     id_produtos INT,
     quantidade INT NOT NULL,
-    preco_custo DECIMAL(8,2) NOT NULL,
-    total_item DECIMAL(8,2),
-    data_atualizacao DATETIME NOT NULL,
+    preco_custo DECIMAL(8, 2) NOT NULL,
+    total_item DECIMAL(8, 2),
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id_compras, id_produtos),
-    FOREIGN KEY (id_compras) REFERENCES compras(id_compras),
-    FOREIGN KEY (id_produtos) REFERENCES produtos(id_produtos)
+    FOREIGN KEY (id_compras) REFERENCES compras(id_compras) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_produtos) REFERENCES produtos(id_produtos) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE itens_venda (
+-- Armazena a relação entre uma venda e os produtos vendidos.
+CREATE TABLE IF NOT EXISTS itens_venda (
     id_vendas INT,
     id_produtos INT,
     quantidade INT NOT NULL,
-    preco_venda DECIMAL(8,2) NOT NULL,
-    total_item DECIMAL(8,2),
-    data_atualizacao DATETIME NOT NULL,
+    preco_venda DECIMAL(8, 2) NOT NULL,
+    total_item DECIMAL(8, 2),
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id_vendas, id_produtos),
-    FOREIGN KEY (id_vendas) REFERENCES vendas(id_vendas),
-    FOREIGN KEY (id_produtos) REFERENCES produtos(id_produtos)
+    FOREIGN KEY (id_vendas) REFERENCES vendas(id_vendas) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_produtos) REFERENCES produtos(id_produtos) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE status_pagamento (
-    id_status INT AUTO_INCREMENT PRIMARY KEY,
-    descricao VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE contas_pagar (
+-- Armazena informações sobre contas a pagar, como data de vencimento, valor, data de pagamento e status de pagamento.
+CREATE TABLE IF NOT EXISTS contas_pagar (
     id_contas_pagar INT AUTO_INCREMENT PRIMARY KEY,
     id_fornecedores INT,
-    valor DECIMAL(8,2) NOT NULL,
-    data_vencimento DATETIME NOT NULL,
-    data_de_pagamento DATETIME,
+    valor DECIMAL(8, 2) NOT NULL,
+    data_vencimento TIMESTAMP NOT NULL,
+    data_de_pagamento TIMESTAMP,
     id_status_pagamento INT NOT NULL,
     descricao VARCHAR(100),
-    data_atualizacao DATETIME NOT NULL,
-    FOREIGN KEY (id_fornecedores) REFERENCES fornecedores(id_fornecedores),
-    FOREIGN KEY (id_status_pagamento) REFERENCES status_pagamento(id_status)
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_fornecedores) REFERENCES fornecedores(id_fornecedores) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_status_pagamento) REFERENCES status_pagamento(id_status_pagamento)
 );
 
-CREATE TABLE contas_receber (
+-- Armazena informações sobre contas a receber, como data de vencimento, valor, data de pagamento e status de pagamento.
+CREATE TABLE IF NOT EXISTS contas_receber (
     id_contas_receber INT AUTO_INCREMENT PRIMARY KEY,
     id_clientes INT,
-    valor DECIMAL(8,2) NOT NULL,
-    data_vencimento DATETIME NOT NULL,
-    data_de_pagamento DATETIME,
+    valor DECIMAL(8, 2) NOT NULL,
+    data_vencimento TIMESTAMP NOT NULL,
+    data_de_pagamento TIMESTAMP,
     id_status_pagamento INT NOT NULL,
     descricao VARCHAR(100),
-    data_atualizacao DATETIME NOT NULL,
-    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes),
-    FOREIGN KEY (id_status_pagamento) REFERENCES status_pagamento(id_status)
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_status_pagamento) REFERENCES status_pagamento(id_status_pagamento)
 );
 
-CREATE TABLE historico_precos (
+-- Armazena o histórico de preços de produtos, incluindo o preço de custo antigo, o preço de custo novo, o preço de venda antigo, o preço de venda novo e o tipo de alteração.
+CREATE TABLE IF NOT EXISTS historico_precos (
     id_historico_precos INT AUTO_INCREMENT PRIMARY KEY,
     id_produto INT NOT NULL,
-    data_alteracao DATETIME NOT NULL,
-    preco_custo_antigo DECIMAL(8,2) NOT NULL,
-    preco_custo_novo DECIMAL(8,2) NOT NULL,
-    preco_venda_antigo DECIMAL(8,2) NOT NULL,
-    preco_venda_novo DECIMAL(8,2) NOT NULL,
+    data_alteracao TIMESTAMP NOT NULL,
+    preco_custo_antigo DECIMAL(8, 2) NOT NULL,
+    preco_custo_novo DECIMAL(8, 2) NOT NULL,
+    preco_venda_antigo DECIMAL(8, 2) NOT NULL,
+    preco_venda_novo DECIMAL(8, 2) NOT NULL,
     tipo_alteracao VARCHAR(50),
-    FOREIGN KEY (id_produto) REFERENCES produtos(id_produtos)
+    FOREIGN KEY (id_produto) REFERENCES produtos(id_produtos) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE historico_estoque (
+-- Armazena o histórico de quantidade em estoque de produtos, incluindo a quantidade antiga, a quantidade nova e o tipo de alteração.
+CREATE TABLE IF NOT EXISTS historico_estoque (
     id_historico_estoque INT AUTO_INCREMENT PRIMARY KEY,
     id_produto INT NOT NULL,
-    data_alteracao DATETIME NOT NULL,
+    data_alteracao TIMESTAMP NOT NULL,
     quantidade_antiga INT NOT NULL,
     quantidade_nova INT NOT NULL,
     tipo_alteracao VARCHAR(50),
-    FOREIGN KEY (id_produto) REFERENCES produtos(id_produtos)
+    FOREIGN KEY (id_produto) REFERENCES produtos(id_produtos) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CRIAÇÃO DAS TRIGGERS:
@@ -183,7 +199,7 @@ END $$
 
 -- Atualiza a quantidade em estoque após a exclusão de uma compra
 CREATE TRIGGER atualiza_estoque_compra_apos_exclusao
-AFTER DELETE ON itens_compra
+BEFORE DELETE ON itens_compra
 FOR EACH ROW
 BEGIN
     UPDATE estoque
@@ -213,7 +229,7 @@ END $$
 
 -- Atualiza a quantidade em estoque após a exclusão de uma venda
 CREATE TRIGGER atualiza_estoque_venda_apos_exclusao
-AFTER DELETE ON itens_venda
+BEFORE DELETE ON itens_venda
 FOR EACH ROW
 BEGIN
     UPDATE estoque
@@ -299,7 +315,7 @@ END $$
 
 -- Insere no histórico de estoque após a exclusão de uma compra
 CREATE TRIGGER atualiza_historico_estoque_apos_exclusao_compra
-AFTER DELETE ON itens_compra
+BEFORE DELETE ON itens_compra
 FOR EACH ROW
 BEGIN
     INSERT INTO historico_estoque (id_produtos, data_alteracao, quantidade_antiga, quantidade_nova, tipo_alteracao)
@@ -308,7 +324,7 @@ END $$
 
 -- Insere no histórico de estoque após a exclusão de uma venda
 CREATE TRIGGER atualiza_historico_estoque_apos_exclusao_venda
-AFTER DELETE ON itens_venda
+BEFORE DELETE ON itens_venda
 FOR EACH ROW
 BEGIN
     INSERT INTO historico_estoque (id_produtos, data_alteracao, quantidade_antiga, quantidade_nova, tipo_alteracao)
